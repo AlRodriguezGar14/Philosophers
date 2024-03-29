@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/03/29 01:00:17 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/03/29 02:21:38 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <stdbool.h>
 # include <pthread.h> // mutex, thread
 # include <sys/time.h> // gettimeofday
-# include <limits> // INT_MAX
+# include <limits.h> // INT_MAX
 
 typedef struct s_fork
 {
@@ -37,21 +37,21 @@ typedef struct s_philo
 	t_fork			*left_fork;
 	t_fork			*right_fork;
 	pthread_mutex_t	philo_mutex; // for data races
-	t_table			*table;
+	struct s_table			*table;
 }				t_philo;
 
 
 typedef	struct s_table
 {
-	int			time_to_die; // time allowed from last meal to death
-	int			time_to_eat;
-	int			time_to_sleep;
-	int			max_meals; // optional input. Max number of meals allowed <0 == no limit
-	int			numer_of_philos;
-	int			start_time;
-	bool		dinner_ended;
-	bool		threads_in_sync;
-	int			nbr_of_threads_running;
+	int				number_of_philos;
+	int				time_to_die; // time allowed from last meal to death
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				max_meals; // optional input. Max number of meals allowed <0 == no limit
+	int				start_time;
+	bool			dinner_ended;
+	bool			threads_in_sync;
+	int				nbr_of_threads_running;
 	t_fork			*forks; // array of forks
 	t_philo			*philos; // array of philos
 	pthread_t		monitor;
