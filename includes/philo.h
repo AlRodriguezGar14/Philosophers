@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/03/29 02:21:38 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/03/29 02:53:14 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <sys/time.h> // gettimeofday
 # include <limits.h> // INT_MAX
 
+# define BLUE "\033[0;34m"
+# define RESET "\033[0m"
+# define RED "\033[0;31m"
 typedef struct s_fork
 {
 	pthread_mutex_t fork;
@@ -37,8 +40,8 @@ typedef struct s_philo
 	t_fork			*left_fork;
 	t_fork			*right_fork;
 	pthread_mutex_t	philo_mutex; // for data races
-	struct s_table			*table;
-}				t_philo;
+	struct s_table	*table;
+}					t_philo;
 
 
 typedef	struct s_table
