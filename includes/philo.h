@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/03/29 02:53:14 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/03/29 14:52:14 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <pthread.h> // mutex, thread
 # include <sys/time.h> // gettimeofday
 # include <limits.h> // INT_MAX
+# include <errno.h>
 
 # define BLUE "\033[0;34m"
 # define RESET "\033[0m"
@@ -37,8 +38,8 @@ typedef struct s_philo
 	int				has_eaten;
 	int				counter_meals; 
 	int				ms_since_last_meal;
-	t_fork			*left_fork;
-	t_fork			*right_fork;
+	t_fork			*first_fork;
+	t_fork			*second_fork;
 	pthread_mutex_t	philo_mutex; // for data races
 	struct s_table	*table;
 }					t_philo;
