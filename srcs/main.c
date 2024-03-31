@@ -18,6 +18,21 @@ void    ft_error(char *str)
 	exit(EXIT_FAILURE);
 }
 
+void precise_usleep(int ms)
+{
+    struct timeval start, current;
+    int elapsed;
+
+    gettimeofday(&start, NULL);
+    while (1)
+    {
+        gettimeofday(&current, NULL);
+        elapsed = (current.tv_sec - start.tv_sec) * 1000 + (current.tv_usec - start.tv_usec) / 1000;
+        if (elapsed >= ms)
+            break;
+        usleep(100); // sleep for 100 microseconds to prevent high CPU usage
+    }
+}
 
 typedef enum s_Mutex_Thread_Actions
 {
@@ -30,7 +45,6 @@ typedef enum s_Mutex_Thread_Actions
 	DETACH,
 }   t_Mutex_Thread_Actions;
 
-// These errors are copies from the man pages of each pthread_mutex function
 // TODO: Build a clean exit with different returns
 void    handle_mutex_return(t_Mutex_Thread_Actions action, int status)
 {
@@ -206,28 +220,11 @@ void    seat_diners(t_table *table)
 	
 
 }
-typedef	enum s_Time_Code
-{
-	SECONDS,
-	MILISECONDS,
-	MICROSECONDS
-}	t_Time_Code;
-
-long long	get_time(t_Time_Code time_code)
+long long	get_time()
 {
 	struct timeval tv;
-
-	if (gettimeofday(&tv, NULL))
-		ft_error("Gettimeofday failed");
-	if (SECONDS == time_code)
-		return (tv.tv_sec + (tv.tv_usec / 1000000));
-	else if (MILISECONDS == time_code)
-		return (tv.tv_sec * 1000 + (tv.tv_usec / 1000));
-	else if (MICROSECONDS == time_code)
-		return (tv.tv_sec * 1e6 + (tv.tv_usec));
-	else
-		ft_error("Wrong input (gettimeofday)");
-	return (42);
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + (tv.tv_usec / 1000));
 }
 
 
@@ -245,7 +242,7 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 {
 	long long	elapsed;
 
-	elapsed = get_time(MILISECONDS) - philo->table->start_time;
+	elapsed = get_time() - philo->table->start_time;
 
 	mutex_handler(&philo->table->table_mutex, LOCK);
 	
@@ -254,7 +251,7 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 	else if (status == EAT && !philo->table->dinner_ended )
 		printf(CYAN"%lld"RESET" %d is eating\n", elapsed, philo->id);
 	else if (status == SLEEP && !philo->table->dinner_ended )
-		printf(GREEN"%lld"RESET" %d went to sleep\n", elapsed, philo->id);
+		printf(GREEN"%lld"RESET" %d is sleeping\n", elapsed, philo->id);
 	else if (status == THINK && !philo->table->dinner_ended )
 		printf(YELLOW"%lld"RESET" %d is thinking\n", elapsed, philo->id);
 	else if (status == DIE)
@@ -266,56 +263,45 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 
 void	eat(t_philo *philo)
 {
-	mutex_handler(&philo->first_fork->fork, LOCK);
-	write_status(TAKE_FIRST_FORK, philo);
-	mutex_handler(&philo->second_fork->fork, LOCK);
-	write_status(TAKE_SECOND_FORK, philo);
+    mutex_handler(&philo->philo_mutex, LOCK);
+    if (!philo->last_meal_time)
+        philo->last_meal_time = philo->table->start_time;
+    mutex_handler(&philo->philo_mutex, UNLOCK);
+    mutex_handler(&philo->first_fork->fork, LOCK);
+    write_status(TAKE_FIRST_FORK, philo);
+    mutex_handler(&philo->second_fork->fork, LOCK);
+    write_status(TAKE_SECOND_FORK, philo);
 
-	mutex_handler(&philo->philo_mutex, LOCK);
-	if (!philo->last_meal_time)
-		philo->last_meal_time = philo->table->start_time;
-	printf(MAGENTA"\t [%d] Since last meal: %lld\n", philo->id, get_time(MILISECONDS) - philo->last_meal_time);
-	if (get_time(MILISECONDS) - philo->last_meal_time >= philo->table->time_to_die)
-	{
-		write_status(DIE, philo);
-		exit(1);
-	}
-	mutex_handler(&philo->philo_mutex, UNLOCK);
-	
-	philo->counter_meals++;
-	write_status(EAT, philo); // The philosopher starts eating here
-	// TODO: Improve usleep
-	usleep(philo->table->time_to_eat * 1000);
-	philo->last_meal_time = get_time(MILISECONDS);
-	printf("\t[%d] After the meal: %lld\n", philo->id, get_time(MILISECONDS) - philo->last_meal_time);
-	if (philo->table->max_meals > 0 && philo->counter_meals >= philo->table->max_meals)
-	{
-		// TODO: End simulation.
-		// exit (1);
-	}
+    mutex_handler(&philo->philo_mutex, LOCK);
+    if (philo->table->max_meals > 0 && philo->counter_meals >= philo->table->max_meals)
+    {
+        // TODO: End simulation.
+        // exit (1);
+    }
+    philo->last_meal_time = get_time();
+    write_status(EAT, philo);
+    philo->counter_meals++;
+    // TODO: Improve usleep
+    // usleep(philo->table->time_to_eat * 1000);
+	precise_usleep(philo->table->time_to_eat);
+    mutex_handler(&philo->philo_mutex, UNLOCK);
 
-	mutex_handler(&philo->first_fork->fork, UNLOCK);
-	mutex_handler(&philo->second_fork->fork, UNLOCK);
+    mutex_handler(&philo->first_fork->fork, UNLOCK);
+    mutex_handler(&philo->second_fork->fork, UNLOCK);
 }
 
 void	think(t_philo *philo)
 {
 	write_status(THINK, philo);
+	usleep(4200);
 }
 
 void	sleeping(t_philo *philo)
 {
 	write_status(SLEEP, philo);
-	printf(RED"\t[%d] Gonna sleep... %d\n", philo->id, philo->table->time_to_sleep);
 	// TODO: Improve usleep
-	usleep(philo->table->time_to_sleep * 1000);
-	// mutex_handler(&philo->philo_mutex, LOCK);
-	// if (get_time(MILISECONDS) - philo->last_meal_time >= philo->table->time_to_die)
-    // {
-    //     write_status(DIE, philo);
-    //     exit(1);
-    // }
-	// mutex_handler(&philo->philo_mutex, UNLOCK);
+	// usleep(philo->table->time_to_sleep * 1000);
+	precise_usleep(philo->table->time_to_sleep);
 }
 
 void	*start_dinner(void *data)
@@ -330,42 +316,47 @@ void	*start_dinner(void *data)
 		if (philo->counter_meals == philo->table->max_meals)
 			break ;
 		eat(philo);
-		think(philo);
 		sleeping(philo);
+		think(philo);
 	}
 	return (NULL);
 }
 
 void	*monitor_dinner(void *data)
 {
-	int	idx;
-	long long	elapsed;
-	t_table *table;
-	
-	table = (t_table *)data;
-	while (!table->dinner_ended)
-	{
-		idx = -1;
-		while (++idx < table->number_of_philos)
-		{
+    int	idx;
+    long long	elapsed;
+    t_table *table;
+    
+    table = (t_table *)data;
+	while (table->threads_in_sync == false)
+		;
+    while (1)
+    {
+        mutex_handler(&table->table_mutex, LOCK);
+        if (table->dinner_ended)
+        {
+            mutex_handler(&table->table_mutex, UNLOCK);
+            break;
+        }
+        mutex_handler(&table->table_mutex, UNLOCK);
+
+        idx = -1;
+        while (++idx < table->number_of_philos)
+        {
+            if (!table->philos[idx].last_meal_time)
+                continue ;
 			mutex_handler(&table->philos[idx].philo_mutex, LOCK);
-			if (!table->philos[idx].last_meal_time)
-			{
-				mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
-				continue ;
-			}
-			elapsed = get_time(MILISECONDS) - table->philos[idx].last_meal_time;
+            elapsed = get_time() - table->philos[idx].last_meal_time;
 			mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
-			if (elapsed > table->time_to_die)
-			{
-				printf("Exit from the monitor, [%d]\n", idx);
-				exit (1);
-			}
-
-		}
-	}
-	return (NULL);
-
+            if (elapsed > table->time_to_die && !table->philos[idx].is_eating)
+            {
+                write_status(DIE, &table->philos[idx]);
+                exit (1);
+            }
+        }
+    }
+    return (NULL);
 }
 
 void	dinner(t_table *table)
@@ -376,16 +367,16 @@ void	dinner(t_table *table)
 	table->dinner_ended = false;
 	if (table->max_meals == 0)
 		return ;
-	else if (table->number_of_philos == 1)
-		return ;  // TODO: Function for just one filo
+	// else if (table->number_of_philos == 1)
+	// 	return ;  // TODO: Function for just one filo
 	idx = -1;
 	while (++idx < table->number_of_philos)
 		thread_handler(&table->philos[idx].thread_id, start_dinner, &table->philos[idx], CREATE);
 	mutex_handler(&table->table_mutex, LOCK);
 	table->threads_in_sync = true;
 	mutex_handler(&table->table_mutex, UNLOCK);
-	table->start_time = get_time(MILISECONDS);
-	// thread_handler(&table->monitor, monitor_dinner, table, CREATE);
+	table->start_time = get_time();
+	thread_handler(&table->monitor, monitor_dinner, table, CREATE);
 
 	// wait the threads to end
 	idx = -1;
