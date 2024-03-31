@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/03/31 04:34:36 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/03/31 06:40:38 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@
 # define BLUE "\033[0;34m"
 # define RESET "\033[0m"
 # define RED "\033[0;31m"
+# define GREEN "\033[0;32m"
+# define YELLOW "\033[0;33m"
+# define MAGENTA "\033[0;35m"
+# define CYAN "\033[0;36m"
+# define WHITE "\033[0;37m"
 typedef struct s_fork
 {
 	pthread_mutex_t fork;
@@ -38,6 +43,7 @@ typedef struct s_philo
 	int				has_eaten;
 	int				counter_meals; 
 	long long		last_meal_time;
+	bool			is_eating;
 	t_fork			*first_fork;
 	t_fork			*second_fork;
 	pthread_mutex_t	philo_mutex; // for data races
