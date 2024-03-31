@@ -18,67 +18,6 @@ void    ft_error(char *str)
 	exit(EXIT_FAILURE);
 }
 
-void    print_table_conditions(t_table *table)
-{
-	printf("Number of philos: %d\n", table->number_of_philos);
-	printf("Time to die: %d\n", table->time_to_die);
-	printf("Time to eat: %d\n", table->time_to_eat);
-	printf("Time to sleep: %d\n", table->time_to_sleep);
-	printf("Max meals: %d\n", table->max_meals);
-}
-
-void    set_table(int argc, char **argv, t_table *table)
-{
-	// TODO: Sanitize the input - check it is valid
-	table->number_of_philos = ft_atoi(argv[1]);
-	table->time_to_die = ft_atoi(argv[2]) * 1000;
-	table->time_to_eat = ft_atoi(argv[3]) * 1000;
-	table->time_to_sleep = ft_atoi(argv[4]) * 1000;
-	if (argc == 6)
-		table->max_meals = ft_atoi(argv[5]);
-	else
-		table->max_meals = -1;
-	print_table_conditions(table);
-	if (table->time_to_die < 6e4
-		|| table->time_to_eat < 6e4
-		|| table->time_to_sleep < 6e4)
-		ft_error("There's no time to eat! (timestamp less than 60ms)");
-}
-
-
-void  assign_forks(t_philo *philo, int philo_seat)
-{
-
-	if (philo->id % 2)
-	{
-		philo->first_fork = &philo->table->forks[philo_seat];
-		philo->second_fork = &philo->table->forks[(philo_seat + 1) % philo->table->number_of_philos];
-	}
-	else
-	{
-		philo->first_fork = &philo->table->forks[(philo_seat + 1) % philo->table->number_of_philos];
-		philo->second_fork = &philo->table->forks[philo_seat];
-	}
-}
-
-void    init_philo(t_table *table)
-{
-	int idx;
-	t_philo *philo;
-
-	idx = -1;
-	printf("init philo\n");
-	while (++idx < table->number_of_philos)
-	{
-		philo = table->philos + idx;
-		philo->id = idx + 1;
-		philo->has_eaten = false;
-		philo->table = table;
-		philo->has_eaten = 0;
-		assign_forks(philo, idx);
-		printf("Philo %d owns the forks:\n\ta -> %d\n\tb-> %d\n", philo->id, philo->first_fork->fork_id, philo->second_fork->fork_id);
-	}
-}
 
 typedef enum s_Mutex_Thread_Actions
 {
@@ -132,29 +71,112 @@ void	handle_thread_error(t_Mutex_Thread_Actions action, int status)
 		return ;
 	if (status == EPERM && action == CREATE)
 		ft_error("The caller does not have appropriate permission to set the required scheduling parameters or scheduling policy.");
-	if (status == EAGAIN && action == CREATE)
+	else if (status == EAGAIN && action == CREATE)
 		ft_error("The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process [PTHREAD_THREADS_MAX] would be exceeded.");
-	if (status == EINVAL && action == CREATE)
+	else if (status == EINVAL && action == CREATE)
 		ft_error("The value specified by attr is invalid.");
-	if (status == EINVAL && (action == JOIN || action == DETACH))
+	else if (status == EINVAL && (action == JOIN || action == DETACH))
 		ft_error("The implementation has detected that the value specified by thread does not refer to a joinable thread.");
-	if (status == ESRCH && (action == JOIN || action == DETACH))
+	else if (status == ESRCH && (action == JOIN || action == DETACH))
 		ft_error("No thread could be found corresponding to that specified by the given thread ID, thread.");
-	if (status == EDEADLK && action == JOIN)
+	else if (status == EDEADLK && action == JOIN)
 		ft_error("A deadlock was detected or the value of thread specifies the calling thread.");
 }
 
-void	thread_handler(pthread_t *thread, void *(*foo)(void *), void *data, t_Mutex_Thread_Actions action)
+void	thread_handler(pthread_t *thread, void *(*dinner)(void *), void *data, t_Mutex_Thread_Actions action)
 {
 	if (action == CREATE)
-		handle_thread_error(pthread_create(thread, NULL, foo, data), action);		
-	if (action == JOIN)
+		handle_thread_error(pthread_create(thread, NULL, dinner, data), action);		
+	else if (action == JOIN)
 		handle_thread_error(pthread_join(*thread, NULL), action);
-	if (action == DETACH)
+	else if (action == DETACH)
 		handle_thread_error(pthread_detach(*thread), action);
 	else
 		printf("TODO: No action to handle (thread).\n");
 	
+}
+
+void    print_table_conditions(t_table *table)
+{
+	printf("Number of philos: %d\n", table->number_of_philos);
+	printf("Time to die: %d\n", table->time_to_die);
+	printf("Time to eat: %d\n", table->time_to_eat);
+	printf("Time to sleep: %d\n", table->time_to_sleep);
+	printf("Max meals: %d\n", table->max_meals);
+}
+
+// void    set_table(int argc, char **argv, t_table *table)
+// {
+// 	// TODO: Sanitize the input - check it is valid
+// 	// TODO: No negative numbers as input allowed
+// 	table->number_of_philos = ft_atoi(argv[1]);
+// 	table->time_to_die = ft_atoi(argv[2]) * 1000;
+// 	table->time_to_eat = ft_atoi(argv[3]) * 1000;
+// 	table->time_to_sleep = ft_atoi(argv[4]) * 1000;
+// 	if (argc == 6)
+// 		table->max_meals = ft_atoi(argv[5]);
+// 	else
+// 		table->max_meals = -1;
+// 	print_table_conditions(table);
+// 	if (table->time_to_die < 6e4
+// 		|| table->time_to_eat < 6e4
+// 		|| table->time_to_sleep < 6e4)
+// 		ft_error("There's no time to eat! (timestamp less than 60ms)");
+// 	mutex_handler(&table->table_mutex, INIT);
+// }
+
+void    set_table(int argc, char **argv, t_table *table)
+{
+	// TODO: Sanitize the input - check it is valid
+	// TODO: No negative numbers as input allowed
+	table->number_of_philos = ft_atoi(argv[1]);
+	table->time_to_die = ft_atoi(argv[2]);
+	table->time_to_eat = ft_atoi(argv[3]);
+	table->time_to_sleep = ft_atoi(argv[4]);
+	if (argc == 6)
+		table->max_meals = ft_atoi(argv[5]);
+	else
+		table->max_meals = -1;
+	print_table_conditions(table);
+	if (table->time_to_die < 60
+		|| table->time_to_eat < 60
+		|| table->time_to_sleep < 60)
+		ft_error("There's no time to eat! (timestamp less than 60ms)");
+	mutex_handler(&table->table_mutex, INIT);
+}
+
+void  assign_forks(t_philo *philo, int philo_seat)
+{
+
+	if (philo->id % 2)
+	{
+		philo->first_fork = &philo->table->forks[philo_seat];
+		philo->second_fork = &philo->table->forks[(philo_seat + 1) % philo->table->number_of_philos];
+	}
+	else
+	{
+		philo->first_fork = &philo->table->forks[(philo_seat + 1) % philo->table->number_of_philos];
+		philo->second_fork = &philo->table->forks[philo_seat];
+	}
+}
+
+void    init_philo(t_table *table)
+{
+	int idx;
+	t_philo *philo;
+
+	idx = -1;
+	printf("init philo\n");
+	while (++idx < table->number_of_philos)
+	{
+		philo = table->philos + idx;
+		philo->id = idx + 1;
+		philo->has_eaten = false;
+		philo->table = table;
+		philo->has_eaten = 0;
+		assign_forks(philo, idx);
+		printf("Philo %d owns the forks:\n\ta -> %d\n\tb-> %d\n", philo->id, philo->first_fork->fork_id, philo->second_fork->fork_id);
+	}
 }
 
 void	init_forks(t_table *table)
@@ -183,15 +205,126 @@ void    seat_diners(t_table *table)
 	
 
 }
+typedef	enum s_Time_Code
+{
+	SECONDS,
+	MILISECONDS,
+	MICROSECONDS
+}	t_Time_Code;
+
+long long	get_time(t_Time_Code time_code)
+{
+	struct timeval tv;
+
+	if (gettimeofday(&tv, NULL))
+		ft_error("Gettimeofday failed");
+	if (SECONDS == time_code)
+		return (tv.tv_sec + (tv.tv_usec / 1000000));
+	else if (MILISECONDS == time_code)
+		return (tv.tv_sec * 1000 + (tv.tv_usec / 1000));
+	else if (MICROSECONDS == time_code)
+		return (tv.tv_sec * 1e6 + (tv.tv_usec));
+	else
+		ft_error("Wrong input (gettimeofday)");
+	return (42);
+}
+
+
+typedef	enum s_Philo_Status
+{
+	EAT,
+	THINK,
+	SLEEP,
+	TAKE_FIRST_FORK,
+	TAKE_SECOND_FORK,
+	DIE,
+}	t_Philo_Status;
+
+void	write_status(t_Philo_Status status, t_philo *philo)
+{
+	long long	elapsed;
+
+	elapsed = get_time(MILISECONDS) - philo->table->start_time;
+
+	mutex_handler(&philo->table->table_mutex, LOCK);
+	
+	if ((status == TAKE_FIRST_FORK || status == TAKE_SECOND_FORK) && !philo->table->dinner_ended)
+		printf(BLUE"%lld"RESET" %d has taken a fork\n", elapsed, philo->id);
+	else if (status == EAT && !philo->table->dinner_ended )
+		printf(BLUE"%lld"RESET" %d is eating\n", elapsed, philo->id);
+	else if (status == SLEEP && !philo->table->dinner_ended )
+		printf(BLUE"%lld"RESET" %d went to sleep\n", elapsed, philo->id);
+	else if (status == THINK && !philo->table->dinner_ended )
+		printf(BLUE"%lld"RESET" %d is thinking\n", elapsed, philo->id);
+	else if (status == DIE)
+		printf(BLUE"%lld"RESET" %d died\n", elapsed, philo->id);
+
+	mutex_handler(&philo->table->table_mutex, UNLOCK);
+}
+
+
+void	eat(t_philo *philo)
+{
+	mutex_handler(&philo->first_fork->fork, LOCK);
+	mutex_handler(&philo->second_fork->fork, LOCK);
+
+	// if (!philo->last_meal_time)	
+	// 	philo->last_meal_time = philo->table->start_time;
+	printf("%lld\n", get_time(MILISECONDS) - philo->last_meal_time);
+	// printf(RED"%d\n", philo->table->time_to_die);
+	if (get_time(MILISECONDS) - philo->last_meal_time >= philo->table->time_to_die)
+	{
+		write_status(DIE, philo);
+		// exit(1);
+	}
+	write_status(TAKE_FIRST_FORK, philo);
+	write_status(TAKE_SECOND_FORK, philo);
+	usleep(philo->table->time_to_sleep * 1000);
+
+	philo->last_meal_time = get_time(MILISECONDS);
+	mutex_handler(&philo->first_fork->fork, UNLOCK);
+	mutex_handler(&philo->second_fork->fork, UNLOCK);
+}
+
+void	*start_dinner(void *data)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)data;
+	while (philo->table->threads_in_sync == false)
+		;
+	while (!philo->table->dinner_ended)
+	{
+		if (philo->counter_meals == philo->table->max_meals)
+			break ;
+		else
+			eat(philo);
+	}
+	return (NULL);
+}
 
 void	dinner(t_table *table)
 {
-	if (table->max_meals <= 0)
+	int	idx;
+
+	table->threads_in_sync = false;
+	table->dinner_ended = false;
+	if (table->max_meals == 0)
 		return ;
 	else if (table->number_of_philos == 1)
-		;  // TODO: Function for just one filo
-	else 
-		printf("Run the simulation");
+		return ;  // TODO: Function for just one filo
+	idx = -1;
+	while (++idx < table->number_of_philos)
+		thread_handler(&table->philos[idx].thread_id, start_dinner, &table->philos[idx], CREATE);
+	mutex_handler(&table->table_mutex, LOCK);
+	table->threads_in_sync = true;
+	mutex_handler(&table->table_mutex, UNLOCK);
+	table->start_time = get_time(MILISECONDS);
+
+	// wait the threads to end
+	idx = -1;
+	while (++idx < table->number_of_philos)
+		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);
 }
 
 int main(int argc, char **argv)
@@ -204,7 +337,7 @@ int main(int argc, char **argv)
 	seat_diners(&table);
 	// TODO: Cleanup function for when the diner ends. (currently I have exit errors)
 	// Pending to replace the exits with return values to como back here and free allocated memory (forks and philos)
-
+	dinner(&table);
 
 	return (0);
 }
