@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/01 07:35:23 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/01 22:12:39 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ typedef struct s_philo
 {
 	int				id;
 	pthread_t		thread_id;
-	int				has_eaten;
+	bool			has_eaten;
 	int				counter_meals; 
-	long long		last_meal_time;
+	long			last_meal_time;
 	bool			is_eating;
 	t_fork			*first_fork;
 	t_fork			*second_fork;
@@ -60,7 +60,7 @@ typedef	struct s_table
 	int				time_to_sleep;
 	int				max_meals; // optional input. Max number of meals allowed <0 == no limit
 	int				max_meals_achieved;
-	long long		start_time;
+	long			start_time;
 	bool			dinner_ended;
 	bool			threads_in_sync;
 	int				nbr_of_threads_running;
