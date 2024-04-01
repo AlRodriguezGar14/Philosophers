@@ -278,12 +278,12 @@ void	eat(t_philo *philo)
         // TODO: End simulation.
         // exit (1);
     }
+	philo->is_eating = true;
     philo->last_meal_time = get_time();
     write_status(EAT, philo);
     philo->counter_meals++;
-    // TODO: Improve usleep
-    // usleep(philo->table->time_to_eat * 1000);
 	precise_usleep(philo->table->time_to_eat);
+	philo->is_eating = false;
     mutex_handler(&philo->philo_mutex, UNLOCK);
 
     mutex_handler(&philo->first_fork->fork, UNLOCK);
@@ -329,8 +329,9 @@ void	*monitor_dinner(void *data)
     t_table *table;
     
     table = (t_table *)data;
-	while (table->threads_in_sync == false)
-		;
+    while (table->threads_in_sync == false)
+        ;
+    precise_usleep(table->time_to_die);
     while (1)
     {
         mutex_handler(&table->table_mutex, LOCK);
@@ -346,14 +347,17 @@ void	*monitor_dinner(void *data)
         {
             if (!table->philos[idx].last_meal_time)
                 continue ;
-			mutex_handler(&table->philos[idx].philo_mutex, LOCK);
+            mutex_handler(&table->philos[idx].philo_mutex, LOCK);
             elapsed = get_time() - table->philos[idx].last_meal_time;
-			mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
             if (elapsed > table->time_to_die && !table->philos[idx].is_eating)
             {
+        		mutex_handler(&table->table_mutex, LOCK);
+				table->dinner_ended = true;
+        		mutex_handler(&table->table_mutex, UNLOCK);
                 write_status(DIE, &table->philos[idx]);
                 exit (1);
             }
+            mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
         }
     }
     return (NULL);
@@ -382,6 +386,7 @@ void	dinner(t_table *table)
 	idx = -1;
 	while (++idx < table->number_of_philos)
 		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);
+	thread_handler(&table->monitor, NULL, NULL, JOIN);
 }
 
 int main(int argc, char **argv)
