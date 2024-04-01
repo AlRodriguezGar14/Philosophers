@@ -371,16 +371,16 @@ void	*monitor_dinner(void *data)
                 continue ;
             mutex_handler(&table->philos[idx].philo_mutex, LOCK);
             elapsed = get_time() - table->philos[idx].last_meal_time;
-            if (elapsed > table->time_to_die && !table->philos[idx].is_eating && !table->philos[idx].has_eaten)
+            mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
+            if (elapsed > table->time_to_die && !table->philos[idx].is_eating)
             {
+                write_status(DIE, &table->philos[idx]);
         		mutex_handler(&table->table_mutex, LOCK);
 				table->dinner_ended = true;
         		mutex_handler(&table->table_mutex, UNLOCK);
-                write_status(DIE, &table->philos[idx]);
 				break ;
                 // exit (1);
             }
-            mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
         }
     }
     return (NULL);
