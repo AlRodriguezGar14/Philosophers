@@ -151,6 +151,7 @@ void    set_table(int argc, char **argv, t_table *table)
 		table->max_meals = ft_atoi(argv[5]);
 	else
 		table->max_meals = -1;
+	table->max_meals_achieved = 0;
 	print_table_conditions(table);
 	if (table->time_to_die < 60
 		|| table->time_to_eat < 60
@@ -274,13 +275,14 @@ void	eat(t_philo *philo)
 
     mutex_handler(&philo->philo_mutex, LOCK);
 	philo->is_eating = true;
-    if (philo->table->max_meals > 0 && philo->counter_meals >= philo->table->max_meals)
-    {
-        // TODO: End simulation.
-        // exit (1);
-    }
     philo->last_meal_time = get_time();
     write_status(EAT, philo);
+    if (philo->table->max_meals > 0 && philo->counter_meals == philo->table->max_meals)
+    {
+		mutex_handler(&philo->table->table_mutex, LOCK);
+		philo->table->max_meals_achieved++;
+		mutex_handler(&philo->table->table_mutex, UNLOCK);
+    }
     philo->counter_meals++;
 	philo->is_eating = false;
     mutex_handler(&philo->philo_mutex, UNLOCK);
@@ -313,8 +315,8 @@ void	*start_dinner(void *data)
 		;
 	while (!philo->table->dinner_ended)
 	{
-		if (philo->counter_meals == philo->table->max_meals)
-			break ;
+		// if (philo->counter_meals == philo->table->max_meals)
+		// 	break ;
 		eat(philo);
 		sleeping(philo);
 		think(philo);
@@ -332,14 +334,19 @@ void	*monitor_dinner(void *data)
     while (table->threads_in_sync == false)
         ;
     precise_usleep(table->time_to_die);
-    while (1)
+    while (!table->dinner_ended)
     {
         mutex_handler(&table->table_mutex, LOCK);
-        if (table->dinner_ended)
-        {
-            mutex_handler(&table->table_mutex, UNLOCK);
-            break;
-        }
+		if (table->max_meals_achieved == table->number_of_philos)
+		{
+			table->dinner_ended = true;
+			break ;
+		}
+        // if (table->dinner_ended)
+        // {
+        //     mutex_handler(&table->table_mutex, UNLOCK);
+        //     break;
+        // }
         mutex_handler(&table->table_mutex, UNLOCK);
 
         idx = -1;
@@ -355,7 +362,8 @@ void	*monitor_dinner(void *data)
 				table->dinner_ended = true;
         		mutex_handler(&table->table_mutex, UNLOCK);
                 write_status(DIE, &table->philos[idx]);
-                exit (1);
+				break ;
+                // exit (1);
             }
             mutex_handler(&table->philos[idx].philo_mutex, UNLOCK);
         }
@@ -385,8 +393,11 @@ void	dinner(t_table *table)
 	// wait the threads to end
 	idx = -1;
 	while (++idx < table->number_of_philos)
-		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);
+		thread_handler(&table->philos[idx].thread_id, NULL, NULL, DETACH);
+	// The pthread_join subroutine blocks the calling thread until the thread thread terminates. The target thread's termination status is returned in the status parameter.
 	thread_handler(&table->monitor, NULL, NULL, JOIN);
+
+	printf("Ladies and gentlement, the dinner ended\n");
 }
 
 int main(int argc, char **argv)

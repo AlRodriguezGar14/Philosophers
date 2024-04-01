@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/03/31 06:40:38 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/01 05:57:27 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef	struct s_table
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				max_meals; // optional input. Max number of meals allowed <0 == no limit
+	int				max_meals_achieved;
 	long long		start_time;
 	bool			dinner_ended;
 	bool			threads_in_sync;
@@ -66,7 +67,6 @@ typedef	struct s_table
 	t_philo			*philos; // array of philos
 	pthread_t		monitor;
 	pthread_mutex_t	table_mutex;
-	pthread_mutex_t	stdout_dataraces_mutex;
 
 }	t_table;
 # endif
