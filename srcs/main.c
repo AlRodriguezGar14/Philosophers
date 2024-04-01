@@ -277,12 +277,12 @@ void	eat(t_philo *philo)
 	philo->is_eating = true;
     philo->last_meal_time = get_time();
     write_status(EAT, philo);
-    if (philo->table->max_meals > 0 && philo->counter_meals == philo->table->max_meals)
-    {
-		mutex_handler(&philo->table->table_mutex, LOCK);
-		philo->table->max_meals_achieved++;
-		mutex_handler(&philo->table->table_mutex, UNLOCK);
-    }
+    // if (philo->table->max_meals > 0 && philo->counter_meals == philo->table->max_meals)
+    // {
+	// 	mutex_handler(&philo->table->table_mutex, LOCK);
+	// 	philo->table->max_meals_achieved++;
+	// 	mutex_handler(&philo->table->table_mutex, UNLOCK);
+    // }
     philo->counter_meals++;
 	philo->is_eating = false;
     mutex_handler(&philo->philo_mutex, UNLOCK);
@@ -317,16 +317,22 @@ void	*start_dinner(void *data)
 		eat(philo);
 		mutex_handler(&philo->philo_mutex, LOCK);
 		if (philo->counter_meals == philo->table->max_meals)
-			philo->has_eaten = true;
-		mutex_handler(&philo->philo_mutex, UNLOCK);
-		sleeping(philo);
-		if (philo->has_eaten)
 		{
+			philo->has_eaten = true;
 			mutex_handler(&philo->table->table_mutex, LOCK);
 			philo->table->max_meals_achieved++;
 			mutex_handler(&philo->table->table_mutex, UNLOCK);
-			break;
+
 		}
+		mutex_handler(&philo->philo_mutex, UNLOCK);
+		sleeping(philo);
+		// if (philo->has_eaten && philo->counter_meals == philo->table->max_meals)
+		// {
+		// 	mutex_handler(&philo->table->table_mutex, LOCK);
+		// 	philo->table->max_meals_achieved++;
+		// 	mutex_handler(&philo->table->table_mutex, UNLOCK);
+		// 	// break;
+		// }
 		think(philo);
 	}
 	return (NULL);
