@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/01 05:57:27 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/01 07:35:23 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # define MAGENTA "\033[0;35m"
 # define CYAN "\033[0;36m"
 # define WHITE "\033[0;37m"
+
 typedef struct s_fork
 {
 	pthread_mutex_t fork;

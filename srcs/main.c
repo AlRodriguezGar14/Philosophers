@@ -18,7 +18,7 @@ void    ft_error(char *str)
 	exit(EXIT_FAILURE);
 }
 
-void precise_usleep(int ms)
+void precise_usleep(int ms, t_table *table)
 {
     struct timeval start, current;
     int elapsed;
@@ -28,9 +28,9 @@ void precise_usleep(int ms)
     {
         gettimeofday(&current, NULL);
         elapsed = (current.tv_sec - start.tv_sec) * 1000 + (current.tv_usec - start.tv_usec) / 1000;
-        if (elapsed >= ms)
+        if (elapsed >= ms || table->dinner_ended)
             break;
-        usleep(100); // sleep for 100 microseconds to prevent high CPU usage
+        usleep(100); 
     }
 }
 
@@ -255,7 +255,7 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 		printf(GREEN"%lld"RESET" %d is sleeping\n", elapsed, philo->id);
 	else if (status == THINK && !philo->table->dinner_ended )
 		printf(YELLOW"%lld"RESET" %d is thinking\n", elapsed, philo->id);
-	else if (status == DIE)
+	else if (status == DIE && !philo->table->dinner_ended)
 		printf(RED"%lld"RESET" %d died\n", elapsed, philo->id);
 
 	mutex_handler(&philo->table->table_mutex, UNLOCK);
@@ -286,7 +286,7 @@ void	eat(t_philo *philo)
     philo->counter_meals++;
 	philo->is_eating = false;
     mutex_handler(&philo->philo_mutex, UNLOCK);
-	precise_usleep(philo->table->time_to_eat);
+	precise_usleep(philo->table->time_to_eat, philo->table);
 
     mutex_handler(&philo->first_fork->fork, UNLOCK);
     mutex_handler(&philo->second_fork->fork, UNLOCK);
@@ -295,15 +295,14 @@ void	eat(t_philo *philo)
 void	think(t_philo *philo)
 {
 	write_status(THINK, philo);
-	usleep(1337);
+	precise_usleep(42, philo->table);
+	// usleep(1337);
 }
 
 void	sleeping(t_philo *philo)
 {
 	write_status(SLEEP, philo);
-	// TODO: Improve usleep
-	// usleep(philo->table->time_to_sleep * 1000);
-	precise_usleep(philo->table->time_to_sleep);
+	precise_usleep(philo->table->time_to_sleep, philo->table);
 }
 
 void	*start_dinner(void *data)
@@ -315,10 +314,19 @@ void	*start_dinner(void *data)
 		;
 	while (!philo->table->dinner_ended)
 	{
-		// if (philo->counter_meals == philo->table->max_meals)
-		// 	break ;
 		eat(philo);
+		mutex_handler(&philo->philo_mutex, LOCK);
+		if (philo->counter_meals == philo->table->max_meals)
+			philo->has_eaten = true;
+		mutex_handler(&philo->philo_mutex, UNLOCK);
 		sleeping(philo);
+		if (philo->has_eaten)
+		{
+			mutex_handler(&philo->table->table_mutex, LOCK);
+			philo->table->max_meals_achieved++;
+			mutex_handler(&philo->table->table_mutex, UNLOCK);
+			break;
+		}
 		think(philo);
 	}
 	return (NULL);
@@ -333,13 +341,14 @@ void	*monitor_dinner(void *data)
     table = (t_table *)data;
     while (table->threads_in_sync == false)
         ;
-    precise_usleep(table->time_to_die);
+    precise_usleep(table->time_to_die, table);
     while (!table->dinner_ended)
     {
         mutex_handler(&table->table_mutex, LOCK);
 		if (table->max_meals_achieved == table->number_of_philos)
 		{
 			table->dinner_ended = true;
+        	mutex_handler(&table->table_mutex, UNLOCK);
 			break ;
 		}
         // if (table->dinner_ended)
@@ -356,7 +365,7 @@ void	*monitor_dinner(void *data)
                 continue ;
             mutex_handler(&table->philos[idx].philo_mutex, LOCK);
             elapsed = get_time() - table->philos[idx].last_meal_time;
-            if (elapsed > table->time_to_die && !table->philos[idx].is_eating)
+            if (elapsed > table->time_to_die && !table->philos[idx].is_eating && !table->philos[idx].has_eaten)
             {
         		mutex_handler(&table->table_mutex, LOCK);
 				table->dinner_ended = true;
@@ -393,11 +402,27 @@ void	dinner(t_table *table)
 	// wait the threads to end
 	idx = -1;
 	while (++idx < table->number_of_philos)
-		thread_handler(&table->philos[idx].thread_id, NULL, NULL, DETACH);
+		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);
+		// thread_handler(&table->philos[idx].thread_id, NULL, NULL, DETACH);
 	// The pthread_join subroutine blocks the calling thread until the thread thread terminates. The target thread's termination status is returned in the status parameter.
 	thread_handler(&table->monitor, NULL, NULL, JOIN);
 
 	printf("Ladies and gentlement, the dinner ended\n");
+}
+
+void	cleanup(t_table *table)
+{
+	int	idx;
+
+	idx = -1;
+	while (++idx < table->number_of_philos)
+	{
+		mutex_handler(&table->philos[idx].philo_mutex, DESTROY);
+		mutex_handler(&table->forks[idx].fork, DESTROY);
+	}
+	mutex_handler(&table->table_mutex, DESTROY);
+	free(table->philos);
+	free(table->forks);
 }
 
 int main(int argc, char **argv)
@@ -408,9 +433,8 @@ int main(int argc, char **argv)
 		ft_error("incorrect number of params");
 	set_table(argc, argv, &table);
 	seat_diners(&table);
-	// TODO: Cleanup function for when the diner ends. (currently I have exit errors)
-	// Pending to replace the exits with return values to como back here and free allocated memory (forks and philos)
 	dinner(&table);
+	cleanup(&table);
 
 	return (0);
 }
