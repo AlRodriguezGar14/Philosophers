@@ -273,18 +273,18 @@ void	eat(t_philo *philo)
     write_status(TAKE_SECOND_FORK, philo);
 
     mutex_handler(&philo->philo_mutex, LOCK);
+	philo->is_eating = true;
     if (philo->table->max_meals > 0 && philo->counter_meals >= philo->table->max_meals)
     {
         // TODO: End simulation.
         // exit (1);
     }
-	philo->is_eating = true;
     philo->last_meal_time = get_time();
     write_status(EAT, philo);
     philo->counter_meals++;
-	precise_usleep(philo->table->time_to_eat);
 	philo->is_eating = false;
     mutex_handler(&philo->philo_mutex, UNLOCK);
+	precise_usleep(philo->table->time_to_eat);
 
     mutex_handler(&philo->first_fork->fork, UNLOCK);
     mutex_handler(&philo->second_fork->fork, UNLOCK);
@@ -293,7 +293,7 @@ void	eat(t_philo *philo)
 void	think(t_philo *philo)
 {
 	write_status(THINK, philo);
-	usleep(4200);
+	usleep(1337);
 }
 
 void	sleeping(t_philo *philo)
