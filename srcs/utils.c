@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 21:12:11 by alberrod          #+#    #+#             */
-/*   Updated: 2023/12/15 07:55:54 by alberrod         ###   ########.fr       */
+/*   Created: 2024/04/02 17:14:21 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/02 17:37:40 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "philo.h"
 
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
@@ -24,4 +24,35 @@ void	*ft_memcpy(void *dest, const void *src, size_t n)
 	while (n--)
 		*char_dest++ = *char_src++;
 	return (dest);
+}
+
+static int	ft_isdigit(int c)
+{
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
+int	ft_atoi(const char *str)
+{
+	int		operator;
+	long	output;
+
+	while ((*str >= 9 && *str <= 13) || *str == ' ')
+		str++;
+	operator = 1;
+	if (*str == '-')
+	{
+		operator *= -1;
+		str++;
+	}
+	else if (*str == '+')
+		str++;
+	output = 0;
+	while (ft_isdigit(*str))
+	{
+		output = output * 10 + (*str - '0');
+		str++;
+	}
+	return (output * operator);
 }

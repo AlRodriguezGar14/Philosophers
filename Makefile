@@ -1,14 +1,20 @@
-NAME	= philo
-CC		= CC
-CFLAGS	= -Wall -Wextra -Werror
-SFLAGS	= -g3 -fsanitize=address
+NAME	=	philo
+CC		=	CC
+CFLAGS	=	-Wall -Wextra -Werror
+SFLAGS	=	-g3 -fsanitize=address
 
-FILES	= srcs/main
+FILES	=	srcs/main \
+			srcs/utils \
+			srcs/actions \
+			srcs/handlers \
+			srcs/initialisers \
+			srcs/update_values \
+			srcs/dinner_utils \
+			srcs/dinner
 
 CFILES	= $(addsuffix .c, $(FILES))
 OBJS	= $(addsuffix .o, $(FILES))
 HEADERS	= includes/
-LIBFT_DIR	= utils
 
 all: $(NAME)
 
@@ -16,12 +22,10 @@ all: $(NAME)
 	$(CC) $(CFLAGS) -I $(HEADERS) -c $< -o $@
 
 $(NAME): $(OBJS)
-	make -C $(LIBFT_DIR)
-	$(CC) $(CFLAGS) -o $@ $^ -L $(LIBFT_DIR) -lft
+	$(CC) $(CFLAGS) -o $@ $^ 
 
 clean:
 	rm -rf $(OBJS)
-	make clean -C $(LIBFT_DIR)
 
 fclean: clean
 	rm -rf *.dSYM
