@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 01:51:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/03/29 13:15:46by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/02 13:28:59 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,26 +59,28 @@ void    handle_mutex_return(t_Mutex_Thread_Actions action, int status)
 	else if (status == EINVAL && action == INIT)
 		ft_error("The value specified by attr is invalid.");
 	else if (status == EDEADLK)
-		ft_error("A deadlock would occur if the thread blocked waiting for mutex.");
+		ft_error("A deadlock would occur if the thread blocked \
+				waiting for mutex.");
 	else if (status == EPERM)
 		ft_error("The current thread does not hold a lock on mutex.");
 	else if (status == ENOMEM)
-		ft_error("The process cannot allocate enough memory to create another mutex.");
+		ft_error("The process cannot allocate enough memory \
+				to create another mutex.");
 	else if (status == EBUSY)
 		ft_error("Mutex is locked.");
 
 }
 
-void    mutex_handler(pthread_mutex_t *fork, t_Mutex_Thread_Actions action)
+void    mutex_handler(pthread_mutex_t *mutex, t_Mutex_Thread_Actions action)
 {
 	if (action == LOCK)
-		handle_mutex_return(action, pthread_mutex_lock(fork));
+		handle_mutex_return(action, pthread_mutex_lock(mutex));
 	else if (action == UNLOCK)
-		handle_mutex_return(action, pthread_mutex_unlock(fork));
+		handle_mutex_return(action, pthread_mutex_unlock(mutex));
 	else if (action == INIT)
-		handle_mutex_return(action, pthread_mutex_init(fork, NULL));
+		handle_mutex_return(action, pthread_mutex_init(mutex, NULL));
 	else if (action == DESTROY)
-		handle_mutex_return(action, pthread_mutex_destroy(fork));
+		handle_mutex_return(action, pthread_mutex_destroy(mutex));
 	else
 		printf("TODO: No action to handle (mutex).\n");
 }
@@ -88,20 +90,27 @@ void	handle_thread_error(t_Mutex_Thread_Actions action, int status)
 	if (!status)
 		return ;
 	if (status == EPERM && action == CREATE)
-		ft_error("The caller does not have appropriate permission to set the required scheduling parameters or scheduling policy.");
+		ft_error("The caller does not have appropriate permission to set the \
+				required scheduling parameters or scheduling policy.");
 	else if (status == EAGAIN && action == CREATE)
-		ft_error("The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process [PTHREAD_THREADS_MAX] would be exceeded.");
+		ft_error("The system lacked the necessary resources to create another \
+				thread, or the system-imposed limit on the total number of \
+				threads in a process [PTHREAD_THREADS_MAX] would be exceeded.");
 	else if (status == EINVAL && action == CREATE)
 		ft_error("The value specified by attr is invalid.");
 	else if (status == EINVAL && (action == JOIN || action == DETACH))
-		ft_error("The implementation has detected that the value specified by thread does not refer to a joinable thread.");
+		ft_error("The implementation has detected that the value specified by \
+				thread does not refer to a joinable thread.");
 	else if (status == ESRCH && (action == JOIN || action == DETACH))
-		ft_error("No thread could be found corresponding to that specified by the given thread ID, thread.");
+		ft_error("No thread could be found corresponding to that specified by \
+				the given thread ID, thread.");
 	else if (status == EDEADLK && action == JOIN)
-		ft_error("A deadlock was detected or the value of thread specifies the calling thread.");
+		ft_error("A deadlock was detected or the value of thread specifies the \
+				calling thread.");
 }
 
-void	thread_handler(pthread_t *thread, void *(*dinner)(void *), void *data, t_Mutex_Thread_Actions action)
+void	thread_handler(pthread_t *thread, void *(*dinner)(void *), 
+					void *data, t_Mutex_Thread_Actions action)
 {
 	if (action == CREATE)
 		handle_thread_error(pthread_create(thread, NULL, dinner, data), action);		
@@ -114,10 +123,10 @@ void	thread_handler(pthread_t *thread, void *(*dinner)(void *), void *data, t_Mu
 	
 }
 
-void	update_value(pthread_mutex_t *mutex, void *var, void *value, size_t size)
+void	update_value(pthread_mutex_t *mutex, void *var, void *val, size_t size)
 {
 	mutex_handler(mutex, LOCK);
-	ft_memcpy(var, value, size);
+	ft_memcpy(var, val, size);
 	mutex_handler(mutex, UNLOCK);
 }
 
@@ -168,16 +177,20 @@ void	set_table(int argc, char **argv, t_table *table)
 
 void	assign_forks(t_philo *philo, int philo_seat)
 {
+	t_table *table;
 
+	table = philo->table;
 	if (philo->id % 2)
 	{
-		philo->first_fork = &philo->table->forks[philo_seat];
-		philo->second_fork = &philo->table->forks[(philo_seat + 1) % philo->table->number_of_philos];
+		philo->first_fork = &table->forks[philo_seat];
+		philo->second_fork = &table->forks[(philo_seat + 1)
+											% table->number_of_philos];
 	}
 	else
 	{
-		philo->first_fork = &philo->table->forks[(philo_seat + 1) % philo->table->number_of_philos];
-		philo->second_fork = &philo->table->forks[philo_seat];
+		philo->first_fork = &table->forks[(philo_seat + 1)
+											% table->number_of_philos];
+		philo->second_fork = &table->forks[philo_seat];
 	}
 }
 
@@ -223,7 +236,7 @@ void	seat_diners(t_table *table)
 	table->forks = malloc(sizeof(t_fork) * table->number_of_philos);
 	if (!table->forks)
 		ft_error("Oops, missing forks (malloc error)");
-	init_forks(table); // TODO: Pending to destroy mutexes within forks when needed
+	init_forks(table); 
 	init_philo(table);
 	
 
@@ -254,7 +267,9 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 
 	mutex_handler(&philo->table->table_mutex, LOCK);
 	
-	if ((status == TAKE_FIRST_FORK || status == TAKE_SECOND_FORK) && !philo->table->dinner_ended)
+	if ((status == TAKE_FIRST_FORK
+		|| status == TAKE_SECOND_FORK)
+		&& !philo->table->dinner_ended)
 		printf(BLUE"%ld"RESET" %d has taken a fork\n", elapsed, philo->id);
 	else if (status == EAT && !philo->table->dinner_ended )
 		printf(CYAN"%ld"RESET" %d is eating\n", elapsed, philo->id);
@@ -268,14 +283,13 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 	mutex_handler(&philo->table->table_mutex, UNLOCK);
 }
 
-
 void	eat(t_philo *philo)
 {
+	long	tmp;
+
     if (!philo->last_meal_time)
-		update_value(&philo->philo_mutex,
-				&philo->last_meal_time,
-				&philo->table->start_time,
-				sizeof(long));
+		update_value(&philo->philo_mutex, &philo->last_meal_time,
+				&philo->table->start_time, sizeof(long));
     mutex_handler(&philo->first_fork->fork, LOCK);
     write_status(TAKE_FIRST_FORK, philo);
 	if (philo->table->number_of_philos <= 1)
@@ -284,13 +298,13 @@ void	eat(t_philo *philo)
 	{
 		mutex_handler(&philo->second_fork->fork, LOCK);
 		write_status(TAKE_SECOND_FORK, philo);
-		mutex_handler(&philo->philo_mutex, LOCK);
-		philo->is_eating = true;
-		philo->last_meal_time = get_time();
+		update_boolean(&philo->philo_mutex, &philo->is_eating, true);
+		tmp = get_time();
+		update_value(&philo->philo_mutex,
+					&philo->last_meal_time, &tmp, sizeof(long));
 		write_status(EAT, philo);
-		philo->counter_meals++;
-		philo->is_eating = false;
-		mutex_handler(&philo->philo_mutex, UNLOCK);
+		increment_int(&philo->philo_mutex, &philo->counter_meals);
+		update_boolean(&philo->philo_mutex, &philo->is_eating, false);
 		precise_usleep(philo->table->time_to_eat, philo->table);
 
 		mutex_handler(&philo->second_fork->fork, UNLOCK);
@@ -300,12 +314,16 @@ void	eat(t_philo *philo)
 
 void	think(t_philo *philo)
 {
+	if (philo->table->dinner_ended)
+		return ;
 	write_status(THINK, philo);
 	precise_usleep(1, philo->table);
 }
 
 void	sleeping(t_philo *philo)
 {
+	if (philo->table->dinner_ended)
+		return ;
 	write_status(SLEEP, philo);
 	precise_usleep(philo->table->time_to_sleep, philo->table);
 }
@@ -313,18 +331,21 @@ void	sleeping(t_philo *philo)
 void	*start_dinner(void *data)
 {
 	t_philo	*philo;
+	t_table	*table;
 
 	philo = (t_philo *)data;
-	while (philo->table->threads_in_sync == false)
+	table = philo->table;
+	while (table->threads_in_sync == false)
 		;
-	while (!philo->table->dinner_ended)
+	while (!table->dinner_ended)
 	{
 		eat(philo);
-		if (philo->counter_meals == philo->table->max_meals)
+		if (philo->counter_meals == table->max_meals)
 		{
 			update_boolean(&philo->philo_mutex, &philo->has_eaten, true);
-			increment_int(&philo->table->table_mutex,
-			&philo->table->max_meals_achieved);
+			increment_int(&table->table_mutex, &table->max_meals_achieved);
+			if (table->max_meals_achieved == table->number_of_philos)
+				update_boolean(&table->table_mutex, &table->dinner_ended, true);
 		}
 		sleeping(philo);
 		think(philo);
@@ -344,16 +365,9 @@ void	*monitor_dinner(void *data)
     precise_usleep(table->time_to_die, table);
     while (!table->dinner_ended)
     {
-		if (table->max_meals_achieved == table->number_of_philos)
-		{
-			update_boolean(&table->table_mutex, &table->dinner_ended, true);
-			break ;
-		}
         idx = -1;
         while (++idx < table->number_of_philos)
         {
-            if (!table->philos[idx].last_meal_time)
-                continue ;
             elapsed = get_time() - table->philos[idx].last_meal_time;
             if (elapsed > table->time_to_die && !table->philos[idx].is_eating)
             {
