@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/02 17:48:14 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/03 10:58:28 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 # define PHILO_H
 
 # include <stdbool.h>
-# include <pthread.h> // mutex, thread
-# include <sys/time.h> // gettimeofday
-# include <limits.h> // INT_MAX
+# include <pthread.h>
+# include <sys/time.h>
+# include <limits.h>
 # include <errno.h>
 
 # include <stdarg.h>
@@ -37,47 +37,44 @@
 
 typedef struct s_fork
 {
-	pthread_mutex_t fork;
-	int             fork_id;
-}   t_fork;
-
-
+	pthread_mutex_t	fork;
+	int				fork_id;
+}	t_fork;
 
 typedef struct s_philo
 {
 	int				id;
 	pthread_t		thread_id;
 	bool			has_eaten;
-	int				counter_meals; 
+	int				counter_meals;
 	long			last_meal_time;
 	bool			is_eating;
 	t_fork			*first_fork;
 	t_fork			*second_fork;
-	pthread_mutex_t	philo_mutex; // for data races
+	pthread_mutex_t	philo_mutex;
 	struct s_table	*table;
 }					t_philo;
 
-
-typedef	struct s_table
+typedef struct s_table
 {
 	int				number_of_philos;
-	int				time_to_die; // time allowed from last meal to death
+	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				max_meals; // optional input. Max number of meals allowed <0 == no limit
+	int				max_meals;
 	int				max_meals_achieved;
 	long			start_time;
 	bool			dinner_ended;
 	bool			threads_in_sync;
 	int				nbr_of_threads_running;
-	t_fork			*forks; // array of forks
-	t_philo			*philos; // array of philos
+	t_fork			*forks;
+	t_philo			*philos;
 	pthread_t		monitor;
 	pthread_mutex_t	table_mutex;
 
 }	t_table;
 
-typedef	enum	s_Mutex_Thread_Actions
+typedef enum s_Mutex_Thread_Actions
 {
 	LOCK,
 	UNLOCK,
@@ -86,9 +83,9 @@ typedef	enum	s_Mutex_Thread_Actions
 	CREATE,
 	JOIN,
 	DETACH,
-}   t_Mutex_Thread_Actions;
+}	t_Mutex_Thread_Actions;
 
-typedef	enum	s_Philo_Status
+typedef enum s_Philo_Status
 {
 	EAT,
 	THINK,
@@ -98,13 +95,12 @@ typedef	enum	s_Philo_Status
 	DIE,
 }	t_Philo_Status;
 
-
 // utils.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 int		ft_atoi(const char *str);
 
 // dinner_utils.c
-void    ft_error(char *str);
+void	ft_error(char *str);
 long	get_time(void);
 void	precise_usleep(int ms, t_table *table);
 void	cleanup(t_table *table);
@@ -112,7 +108,7 @@ void	cleanup(t_table *table);
 // handlers.c
 void	mutex_handler(pthread_mutex_t *mutex, t_Mutex_Thread_Actions action);
 void	thread_handler(pthread_t *thread, void *(*dinner)(void *),
-					void *data, t_Mutex_Thread_Actions action);
+			void *data, t_Mutex_Thread_Actions action);
 
 // update_values.c
 void	update_value(pthread_mutex_t *mutex, void *var, void *val, size_t size);
@@ -138,4 +134,4 @@ void	print_table_conditions(t_table *table);
 void	*monitor_dinner(void *data);
 void	dinner(t_table *table);
 
-# endif
+#endif
