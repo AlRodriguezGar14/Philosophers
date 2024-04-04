@@ -64,8 +64,10 @@ void	init_philo(t_table *table)
 		philo = table->philos + idx;
 		philo->id = idx + 1;
 		philo->has_eaten = false;
+		philo->counter_meals = 0;
+		philo->last_meal_time = 0;
+		philo->is_eating = false;
 		philo->table = table;
-		philo->has_eaten = false;
 		assign_forks(philo, idx);
 		printf("Philo %d owns the forks:\n\ta -> %d\n\tb-> %d\n",
 			philo->id, philo->first_fork->fork_id, philo->second_fork->fork_id);

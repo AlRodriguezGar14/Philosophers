@@ -1,5 +1,5 @@
 NAME	=	philo
-CC		=	CC
+CC		=	cc
 CFLAGS	=	-Wall -Wextra -Werror
 SFLAGS	=	-g3 -fsanitize=address
 
