@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/05 21:34:53 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/05 21:45:00 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:42:01 by alberrod          #+#    #+#             */
@@ -63,7 +75,7 @@ void	eat(t_philo *philo)
 
 void	think(t_philo *philo)
 {
-	if (philo->table->dinner_ended)
+	if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 		return ;
 	write_status(THINK, philo);
 	precise_usleep(1, philo->table);
@@ -71,7 +83,7 @@ void	think(t_philo *philo)
 
 void	sleeping(t_philo *philo)
 {
-	if (philo->table->dinner_ended)
+	if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 		return ;
 	write_status(SLEEP, philo);
 	precise_usleep(philo->table->time_to_sleep, philo->table);
@@ -86,7 +98,8 @@ void	*start_dinner(void *data)
 	table = philo->table;
 	while (table->threads_in_sync == false)
 		;
-	while (!table->dinner_ended)
+
+	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
 		eat(philo);
 		if (philo->counter_meals == table->max_meals)

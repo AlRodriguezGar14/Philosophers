@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   update_values.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/05 21:33:06 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/05 21:46:18 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   update_values.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:28:01 by alberrod          #+#    #+#             */
@@ -31,4 +43,17 @@ void	increment_int(pthread_mutex_t *mutex, int *var)
 	mutex_handler(mutex, LOCK);
 	(*var)++;
 	mutex_handler(mutex, UNLOCK);
+}
+
+bool check_bool(pthread_mutex_t *mutex, bool *val)
+{
+	bool    out;
+
+	mutex_handler(mutex, LOCK);
+	if (*val == false)
+		out = false;
+	else
+		out = true;
+	mutex_handler(mutex, UNLOCK);
+	return (out);
 }

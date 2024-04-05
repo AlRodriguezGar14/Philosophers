@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   dinner_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/05 21:51:53 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/05 21:51:53 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dinner_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:36:18 by alberrod          #+#    #+#             */
@@ -40,7 +52,7 @@ void	precise_usleep(int ms, t_table *table)
 			* 1000
 			+ (current.tv_usec - start.tv_usec)
 			/ 1000;
-		if (elapsed >= ms || table->dinner_ended)
+		if (elapsed >= ms || check_bool(&table->table_mutex, &table->dinner_ended))
 			break ;
 		usleep(100);
 	}

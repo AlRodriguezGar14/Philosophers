@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/05 21:34:11 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/05 21:44:40 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
@@ -114,6 +126,10 @@ void	thread_handler(pthread_t *thread, void *(*dinner)(void *),
 void	update_value(pthread_mutex_t *mutex, void *var, void *val, size_t size);
 void	update_boolean(pthread_mutex_t *mutex, bool *var, bool value);
 void	increment_int(pthread_mutex_t *mutex, int *var);
+
+
+bool check_bool(pthread_mutex_t *mutex, bool *val);
+
 
 // initialisers.c
 void	set_table(int argc, char **argv, t_table *table);
