@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 21:33:06 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/05 21:46:18 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/06 00:21:45 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,15 @@ bool check_bool(pthread_mutex_t *mutex, bool *val)
 		out = true;
 	mutex_handler(mutex, UNLOCK);
 	return (out);
+}
+
+long retrieve_times(pthread_mutex_t *mutex, long *val)
+{
+	long out;
+
+	mutex_handler(mutex, LOCK);
+	out = *val;
+	mutex_handler(mutex, UNLOCK);
+	return (out);
+
 }

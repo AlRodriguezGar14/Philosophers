@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   dinner.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/06 00:02:53 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/06 01:13:52 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dinner.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:47:05 by alberrod          #+#    #+#             */
@@ -51,6 +63,7 @@ void	*monitor_dinner(void *data)
 void	dinner(t_table *table)
 {
 	int	idx;
+	long tmp;
 
 	table->threads_in_sync = false;
 	table->dinner_ended = false;
@@ -62,8 +75,9 @@ void	dinner(t_table *table)
 			start_dinner,
 			&table->philos[idx],
 			CREATE);
+	tmp = get_time();
+	update_value(&table->table_mutex, &table->start_time, &tmp, sizeof(long));
 	update_boolean(&table->table_mutex, &table->threads_in_sync, true);
-	table->start_time = get_time();
 	thread_handler(&table->monitor, monitor_dinner, table, CREATE);
 	idx = -1;
 	while (++idx < table->number_of_philos)

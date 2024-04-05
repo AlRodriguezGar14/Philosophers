@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 21:34:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/05 21:45:00 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/06 01:20:50 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ void	write_status(t_Philo_Status status, t_philo *philo)
 {
 	long	elapsed;
 
-	elapsed = get_time() - philo->table->start_time;
 	mutex_handler(&philo->table->table_mutex, LOCK);
+	elapsed = get_time() - philo->table->start_time;
 	if ((status == TAKE_FIRST_FORK
 			|| status == TAKE_SECOND_FORK)
 		&& !philo->table->dinner_ended)
@@ -54,22 +54,20 @@ void	eat(t_philo *philo)
 			&philo->table->start_time, sizeof(long));
 	mutex_handler(&philo->first_fork->fork, LOCK);
 	write_status(TAKE_FIRST_FORK, philo);
-	if (philo->table->number_of_philos <= 1)
-		precise_usleep(philo->table->time_to_die + 1, philo->table);
-	else
-	{
-		mutex_handler(&philo->second_fork->fork, LOCK);
-		write_status(TAKE_SECOND_FORK, philo);
-		update_boolean(&philo->philo_mutex, &philo->is_eating, true);
-		tmp = get_time();
-		update_value(&philo->philo_mutex,
-			&philo->last_meal_time, &tmp, sizeof(long));
-		write_status(EAT, philo);
-		increment_int(&philo->philo_mutex, &philo->counter_meals);
-		update_boolean(&philo->philo_mutex, &philo->is_eating, false);
-		precise_usleep(philo->table->time_to_eat, philo->table);
-		mutex_handler(&philo->second_fork->fork, UNLOCK);
-	}
+	while (philo->table->number_of_philos <= 1)
+		if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
+			return (mutex_handler(&philo->first_fork->fork, UNLOCK));
+	mutex_handler(&philo->second_fork->fork, LOCK);
+	write_status(TAKE_SECOND_FORK, philo);
+	update_boolean(&philo->philo_mutex, &philo->is_eating, true);
+	tmp = get_time();
+	update_value(&philo->philo_mutex,
+		&philo->last_meal_time, &tmp, sizeof(long));
+	write_status(EAT, philo);
+	increment_int(&philo->philo_mutex, &philo->counter_meals);
+	update_boolean(&philo->philo_mutex, &philo->is_eating, false);
+	precise_usleep(philo->table->time_to_eat, philo->table);
+	mutex_handler(&philo->second_fork->fork, UNLOCK);
 	mutex_handler(&philo->first_fork->fork, UNLOCK);
 }
 
@@ -78,7 +76,7 @@ void	think(t_philo *philo)
 	if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 		return ;
 	write_status(THINK, philo);
-	precise_usleep(1, philo->table);
+	precise_usleep(5, philo->table);
 }
 
 void	sleeping(t_philo *philo)
@@ -96,7 +94,8 @@ void	*start_dinner(void *data)
 
 	philo = (t_philo *)data;
 	table = philo->table;
-	while (table->threads_in_sync == false)
+	//while (table->threads_in_sync == false)
+	while (!check_bool(&table->table_mutex, &table->threads_in_sync))
 		;
 
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
