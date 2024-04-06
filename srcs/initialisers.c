@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   initialisers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/06 15:26:51 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/06 15:43:01 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisers.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:30:55 by alberrod          #+#    #+#             */
@@ -12,24 +24,26 @@
 
 #include "philo.h"
 
-// TODO: Sanitize the input - check it is valid
-// TODO: No negative numbers as input allowed
 void	set_table(int argc, char **argv, t_table *table)
 {
+	if (argc != 6)
+		table->max_meals = -1;
+	else
+	{
+		table->max_meals = ft_atoi(argv[5]);
+		if (table->max_meals < 0)
+			ft_error("Not enough foods");
+	}
 	table->number_of_philos = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);
 	table->time_to_sleep = ft_atoi(argv[4]);
-	if (argc == 6)
-		table->max_meals = ft_atoi(argv[5]);
-	else
-		table->max_meals = -1;
 	table->max_meals_achieved = 0;
 	print_table_conditions(table);
-	if (table->time_to_die < 60
-		|| table->time_to_eat < 60
-		|| table->time_to_sleep < 60)
-		ft_error("There's no time to eat! (timestamp less than 60ms)");
+	if (table->time_to_die < 0
+		|| table->time_to_eat < 0
+		|| table->time_to_sleep < 0)
+		ft_error("There's no time to eat! (timestamp less than 0ms)");
 	mutex_handler(&table->table_mutex, INIT);
 }
 
