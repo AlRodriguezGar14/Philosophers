@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 21:34:11 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/06 00:20:40 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/07 23:20:07 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ void	increment_int(pthread_mutex_t *mutex, int *var);
 
 bool check_bool(pthread_mutex_t *mutex, bool *val);
 long retrieve_times(pthread_mutex_t *mutex, long *val);
+int get_int(pthread_mutex_t *mutex, int *val);
 
 
 // initialisers.c

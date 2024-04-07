@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/07 23:14:44 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/07 23:37:59 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 21:34:53 by alberrod          #+#    #+#             */
@@ -49,7 +61,7 @@ void	eat(t_philo *philo)
 {
 	long	tmp;
 
-	if (!philo->last_meal_time)
+	if (!retrieve_times(&philo->philo_mutex, &philo->last_meal_time))
 		update_value(&philo->philo_mutex, &philo->last_meal_time,
 			&philo->table->start_time, sizeof(long));
 	mutex_handler(&philo->first_fork->fork, LOCK);
@@ -101,11 +113,11 @@ void	*start_dinner(void *data)
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
 		eat(philo);
-		if (philo->counter_meals == table->max_meals)
+		if (get_int(&philo->philo_mutex, &philo->counter_meals) == table->max_meals)
 		{
 			update_boolean(&philo->philo_mutex, &philo->has_eaten, true);
 			increment_int(&table->table_mutex, &table->max_meals_achieved);
-			if (table->max_meals_achieved == table->number_of_philos)
+			if (get_int(&table->table_mutex, &table->max_meals_achieved) == table->number_of_philos)
 				update_boolean(&table->table_mutex, &table->dinner_ended, true);
 		}
 		sleeping(philo);

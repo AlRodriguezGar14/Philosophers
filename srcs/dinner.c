@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/06 00:02:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/06 01:13:52 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/07 23:50:40 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,14 @@ void	*monitor_dinner(void *data)
 	t_table	*table;
 
 	table = (t_table *)data;
-	while (table->threads_in_sync == false)
-		;
 	precise_usleep(table->time_to_die, table);
-	while (!table->dinner_ended)
+	while (!check_bool(&table->table_mutex, &table->dinner_ended))
 	{
 		idx = -1;
 		while (++idx < table->number_of_philos)
 		{
-			elapsed = get_time() - table->philos[idx].last_meal_time;
-			if (elapsed > table->time_to_die && !table->philos[idx].is_eating)
+			elapsed = get_time() - retrieve_times(&table->philos[idx].philo_mutex, &table->philos[idx].last_meal_time);
+			if (elapsed > table->time_to_die && !check_bool(&table->philos[idx].philo_mutex, &table->philos[idx].is_eating))
 			{
 				write_status(DIE, &table->philos[idx]);
 				update_boolean(&table->table_mutex, &table->dinner_ended, true);
