@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 01:31:07 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 01:31:57 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 01:35:24 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	eat(t_philo *philo)
 
 	while (philo->table->number_of_philos <= 1)
 		if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
-			return (mutex_handler(&philo->first_fork->fork, UNLOCK));
+			return ;
 	mutex_handler(&philo->first_fork->fork, LOCK);
 	write_status(TAKE_FIRST_FORK, philo);
 	mutex_handler(&philo->second_fork->fork, LOCK);
