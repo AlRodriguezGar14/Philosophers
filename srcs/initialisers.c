@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:30:55 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 16:40:10 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 23:58:42 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	set_table(int argc, char **argv, t_table *table)
 	{
 		table->max_meals = ft_atoi(argv[5]);
 		if (table->max_meals < 0)
-			ft_error("Not enough foods");
+			ft_error("Not enough meals");
 	}
 	table->number_of_philos = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);

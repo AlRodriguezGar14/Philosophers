@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dinner.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 19:26:49 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 19:26:49 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 00:32:44 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ void	dinner(t_table *table)
 			CREATE);
 	tmp = get_time();
 	thread_handler(&table->monitor, monitor_dinner, table, CREATE);
-	update_boolean(&table->table_mutex, &table->threads_in_sync, true);
 	update_value(&table->table_mutex, &table->start_time, &tmp, sizeof(long));
+	update_boolean(&table->table_mutex, &table->threads_in_sync, true);
 	idx = -1;
 	while (++idx < table->number_of_philos)
 		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);

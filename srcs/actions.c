@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:42:01 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 20:48:02 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 00:32:25 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,9 @@ void	*start_dinner(void *data)
 	table = philo->table;
 	while (!check_bool(&table->table_mutex, &table->threads_in_sync))
 		;
+	if (philo->id % 2)
+		precise_usleep(42, table);
+	philo->last_meal_time = philo->table->start_time;
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
 		eat(philo);
