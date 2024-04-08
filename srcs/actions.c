@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/09 01:31:07 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/09 01:31:57 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:42:01 by alberrod          #+#    #+#             */
@@ -72,7 +84,7 @@ void	*start_dinner(void *data)
 	while (!check_bool(&table->table_mutex, &table->threads_in_sync))
 		usleep(100);
 	if (philo->id % 2)
-		precise_usleep(42, table);
+		precise_usleep(table->time_to_eat / 2, table);
 	philo->last_meal_time = philo->table->start_time;
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
