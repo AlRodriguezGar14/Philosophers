@@ -5,32 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/07 23:14:44 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 14:30:48 by alberrod         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   actions.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/05 21:34:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/06 16:41:17 by alberrod         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   actions.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:42:01 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/02 17:45:14 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 16:41:40 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +61,15 @@ void	eat(t_philo *philo)
 
 void	think(t_philo *philo)
 {
+	long	curr_time;
+	int		rand_num;
+
 	if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 		return ;
+	curr_time = get_time();
+	rand_num = ((int)curr_time % 3) + 3;
 	write_status(THINK, philo);
-	precise_usleep(5, philo->table);
+	precise_usleep(rand_num, philo->table);
 }
 
 void	sleeping(t_philo *philo)
@@ -111,11 +92,13 @@ void	*start_dinner(void *data)
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
 		eat(philo);
-		if (get_int(&philo->philo_mutex, &philo->counter_meals) == table->max_meals)
+		if (get_int(&philo->philo_mutex, &philo->counter_meals)
+			== table->max_meals)
 		{
 			update_boolean(&philo->philo_mutex, &philo->has_eaten, true);
 			increment_int(&table->table_mutex, &table->max_meals_achieved);
-			if (get_int(&table->table_mutex, &table->max_meals_achieved) == table->number_of_philos)
+			if (get_int(&table->table_mutex, &table->max_meals_achieved)
+				== table->number_of_philos)
 				update_boolean(&table->table_mutex, &table->dinner_ended, true);
 		}
 		sleeping(philo);

@@ -1,34 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   update_values.c                                    :+:      :+:    :+:   */
+/*   get_values.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 17:28:01 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 16:41:04 by alberrod         ###   ########.fr       */
+/*   Created: 2024/04/08 16:27:41 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/08 16:39:49 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	update_value(pthread_mutex_t *mutex, void *var, void *val, size_t size)
+bool	check_bool(pthread_mutex_t *mutex, const bool *val)
 {
+	bool	out;
+
 	mutex_handler(mutex, LOCK);
-	ft_memcpy(var, val, size);
+	if (*val == false)
+		out = false;
+	else
+		out = true;
 	mutex_handler(mutex, UNLOCK);
+	return (out);
 }
 
-void	update_boolean(pthread_mutex_t *mutex, bool *var, bool value)
+long	retrieve_times(pthread_mutex_t *mutex, const long *val)
 {
+	long	out;
+
 	mutex_handler(mutex, LOCK);
-	*var = value;
+	out = *val;
 	mutex_handler(mutex, UNLOCK);
+	return (out);
 }
 
-void	increment_int(pthread_mutex_t *mutex, int *var)
+int	get_int(pthread_mutex_t *mutex, const int *val)
 {
+	int	out;
+
 	mutex_handler(mutex, LOCK);
-	(*var)++;
+	out = *val;
 	mutex_handler(mutex, UNLOCK);
+	return (out);
 }

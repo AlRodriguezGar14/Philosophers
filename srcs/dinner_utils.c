@@ -5,32 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/08 14:16:23 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 14:24:06 by alberrod         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   dinner_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/05 21:51:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/07 19:57:22 by alberrod         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   dinner_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:36:18 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/02 17:40:10 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 16:38:42 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +40,8 @@ void	precise_usleep(int ms, t_table *table)
 			* 1000
 			+ (current.tv_usec - start.tv_usec)
 			/ 1000;
-		if (elapsed >= ms || check_bool(&table->table_mutex, &table->dinner_ended))
+		if (elapsed >= ms
+			|| check_bool(&table->table_mutex, &table->dinner_ended))
 			break ;
 		usleep(142);
 	}

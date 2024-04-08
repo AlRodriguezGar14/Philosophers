@@ -5,20 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/05 21:34:11 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/07 23:20:07 by alberrod         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/03 10:58:28 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 16:43:04 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +31,7 @@
 # define RED "\033[0;31m"
 # define GREEN "\033[0;32m"
 # define YELLOW "\033[0;33m"
-# define MAGENTA "\033[0;35m"
 # define CYAN "\033[0;36m"
-# define WHITE "\033[0;37m"
 
 typedef struct s_fork
 {
@@ -78,7 +64,6 @@ typedef struct s_table
 	long			start_time;
 	bool			dinner_ended;
 	bool			threads_in_sync;
-	int				nbr_of_threads_running;
 	t_fork			*forks;
 	t_philo			*philos;
 	pthread_t		monitor;
@@ -127,11 +112,10 @@ void	update_value(pthread_mutex_t *mutex, void *var, void *val, size_t size);
 void	update_boolean(pthread_mutex_t *mutex, bool *var, bool value);
 void	increment_int(pthread_mutex_t *mutex, int *var);
 
-
-bool check_bool(pthread_mutex_t *mutex, bool *val);
-long retrieve_times(pthread_mutex_t *mutex, long *val);
-int get_int(pthread_mutex_t *mutex, int *val);
-
+//get_values.c
+bool	check_bool(pthread_mutex_t *mutex, const bool *val);
+long	retrieve_times(pthread_mutex_t *mutex, const long *val);
+int		get_int(pthread_mutex_t *mutex, const int *val);
 
 // initialisers.c
 void	set_table(int argc, char **argv, t_table *table);

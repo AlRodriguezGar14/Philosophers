@@ -9,6 +9,7 @@ FILES	=	srcs/main \
 			srcs/handlers \
 			srcs/initialisers \
 			srcs/update_values \
+			srcs/get_values \
 			srcs/dinner_utils \
 			srcs/dinner
 
