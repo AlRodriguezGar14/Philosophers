@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/06 00:02:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/07 23:50:40 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 14:13:28 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,5 @@ void	dinner(t_table *table)
 	while (++idx < table->number_of_philos)
 		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);
 	thread_handler(&table->monitor, NULL, NULL, JOIN);
-	printf("Ladies and gentlement, the dinner ended\n");
+	printf("Ladies and gentlemen, the dinner ended\n");
 }

@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 23:14:44 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/07 23:37:59 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 14:30:48 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,15 +72,15 @@ void	eat(t_philo *philo)
 	mutex_handler(&philo->second_fork->fork, LOCK);
 	write_status(TAKE_SECOND_FORK, philo);
 	update_boolean(&philo->philo_mutex, &philo->is_eating, true);
+	write_status(EAT, philo);
 	tmp = get_time();
 	update_value(&philo->philo_mutex,
 		&philo->last_meal_time, &tmp, sizeof(long));
-	write_status(EAT, philo);
-	increment_int(&philo->philo_mutex, &philo->counter_meals);
-	update_boolean(&philo->philo_mutex, &philo->is_eating, false);
 	precise_usleep(philo->table->time_to_eat, philo->table);
+	update_boolean(&philo->philo_mutex, &philo->is_eating, false);
 	mutex_handler(&philo->second_fork->fork, UNLOCK);
 	mutex_handler(&philo->first_fork->fork, UNLOCK);
+	increment_int(&philo->philo_mutex, &philo->counter_meals);
 }
 
 void	think(t_philo *philo)
@@ -106,10 +106,8 @@ void	*start_dinner(void *data)
 
 	philo = (t_philo *)data;
 	table = philo->table;
-	//while (table->threads_in_sync == false)
 	while (!check_bool(&table->table_mutex, &table->threads_in_sync))
 		;
-
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
 		eat(philo);

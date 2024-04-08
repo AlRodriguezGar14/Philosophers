@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   dinner_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/08 14:16:23 by alberrod          #+#    #+#             */
+/*   Updated: 2024/04/08 14:24:06 by alberrod         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dinner_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/05 21:51:53 by alberrod          #+#    #+#             */
@@ -54,7 +66,7 @@ void	precise_usleep(int ms, t_table *table)
 			/ 1000;
 		if (elapsed >= ms || check_bool(&table->table_mutex, &table->dinner_ended))
 			break ;
-		usleep(500);
+		usleep(142);
 	}
 }
 
