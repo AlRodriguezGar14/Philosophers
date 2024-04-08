@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 16:43:04 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 01:00:36 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ void	ft_error(char *str);
 long	get_time(void);
 void	precise_usleep(int ms, t_table *table);
 void	cleanup(t_table *table);
+void	write_status(t_Philo_Status status, t_philo *philo);
 
 // handlers.c
 void	mutex_handler(pthread_mutex_t *mutex, t_Mutex_Thread_Actions action);
@@ -125,7 +126,6 @@ void	init_forks(t_table *table);
 void	seat_diners(t_table *table);
 
 // actions.c
-void	write_status(t_Philo_Status status, t_philo *philo);
 void	eat(t_philo *philo);
 void	think(t_philo *philo);
 void	sleeping(t_philo *philo);
