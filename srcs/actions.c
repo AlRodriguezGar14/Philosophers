@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:42:01 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 16:41:40 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 20:48:02 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,12 @@ void	eat(t_philo *philo)
 	if (!retrieve_times(&philo->philo_mutex, &philo->last_meal_time))
 		update_value(&philo->philo_mutex, &philo->last_meal_time,
 			&philo->table->start_time, sizeof(long));
-	mutex_handler(&philo->first_fork->fork, LOCK);
-	write_status(TAKE_FIRST_FORK, philo);
 	while (philo->table->number_of_philos <= 1)
 		if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 			return (mutex_handler(&philo->first_fork->fork, UNLOCK));
+
+	mutex_handler(&philo->first_fork->fork, LOCK);
+	write_status(TAKE_FIRST_FORK, philo);
 	mutex_handler(&philo->second_fork->fork, LOCK);
 	write_status(TAKE_SECOND_FORK, philo);
 	update_boolean(&philo->philo_mutex, &philo->is_eating, true);
@@ -54,22 +55,22 @@ void	eat(t_philo *philo)
 		&philo->last_meal_time, &tmp, sizeof(long));
 	precise_usleep(philo->table->time_to_eat, philo->table);
 	update_boolean(&philo->philo_mutex, &philo->is_eating, false);
-	mutex_handler(&philo->second_fork->fork, UNLOCK);
 	mutex_handler(&philo->first_fork->fork, UNLOCK);
+	mutex_handler(&philo->second_fork->fork, UNLOCK);
 	increment_int(&philo->philo_mutex, &philo->counter_meals);
 }
 
 void	think(t_philo *philo)
 {
-	long	curr_time;
-	int		rand_num;
+//	long	curr_time;
+//	int		rand_num;
 
 	if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 		return ;
-	curr_time = get_time();
-	rand_num = ((int)curr_time % 3) + 3;
+//	curr_time = get_time();
+//	rand_num = ((int)curr_time % 3) + 3;
 	write_status(THINK, philo);
-	precise_usleep(rand_num, philo->table);
+//	precise_usleep(4, philo->table);
 }
 
 void	sleeping(t_philo *philo)

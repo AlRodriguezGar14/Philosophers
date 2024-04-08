@@ -6,7 +6,7 @@
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:36:18 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 16:38:42 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/08 21:20:53 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,30 +20,23 @@ void	ft_error(char *str)
 
 long	get_time(void)
 {
-	struct timeval	tv;
+	struct timeval	time;
 
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + (tv.tv_usec / 1000));
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000 + (time.tv_usec / 1000));
 }
 
 void	precise_usleep(int ms, t_table *table)
 {
-	struct timeval	start;
-	struct timeval	current;
-	int				elapsed;
+	long	start;
 
-	gettimeofday(&start, NULL);
-	while (1)
+	start = get_time();
+	while (42)
 	{
-		gettimeofday(&current, NULL);
-		elapsed = (current.tv_sec - start.tv_sec)
-			* 1000
-			+ (current.tv_usec - start.tv_usec)
-			/ 1000;
-		if (elapsed >= ms
+		if (get_time() - start >= (long)ms
 			|| check_bool(&table->table_mutex, &table->dinner_ended))
 			break ;
-		usleep(142);
+		usleep(100);
 	}
 }
 
