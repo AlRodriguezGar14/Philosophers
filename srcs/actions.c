@@ -5,20 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/09 01:31:07 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 01:35:24 by alberrod         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   actions.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:42:01 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 01:00:19 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 02:12:31 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +17,11 @@ void	eat(t_philo *philo)
 	long	tmp;
 
 	while (philo->table->number_of_philos <= 1)
+	{
 		if (check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 			return ;
+		usleep(42);
+	}
 	mutex_handler(&philo->first_fork->fork, LOCK);
 	write_status(TAKE_FIRST_FORK, philo);
 	mutex_handler(&philo->second_fork->fork, LOCK);
@@ -85,7 +76,8 @@ void	*start_dinner(void *data)
 		usleep(100);
 	if (philo->id % 2)
 		precise_usleep(table->time_to_eat / 2, table);
-	philo->last_meal_time = philo->table->start_time;
+	update_value(&philo->philo_mutex,
+		&philo->last_meal_time, &table->start_time, sizeof(long));
 	while (!check_bool(&philo->table->table_mutex, &philo->table->dinner_ended))
 	{
 		eat(philo);

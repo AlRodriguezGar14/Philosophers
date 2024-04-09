@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dinner_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:36:18 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 01:00:25 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 02:11:53 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
