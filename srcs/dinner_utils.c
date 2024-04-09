@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dinner_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:36:18 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 02:11:53 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 20:41:11 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	ft_error(char *str)
 {
 	printf(RED"%s\n"RESET, str);
-	exit(EXIT_FAILURE);
 }
 
 long	get_time(void)

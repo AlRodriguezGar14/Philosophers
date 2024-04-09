@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   handlers.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:22:44 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/02 17:26:48 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 20:42:29 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// TODO: Build a clean exit with different returns
 static void	handle_mutex_return(t_Mutex_Thread_Actions action, int status)
 {
 	if (!status)
@@ -44,7 +43,7 @@ void	mutex_handler(pthread_mutex_t *mutex, t_Mutex_Thread_Actions action)
 	else if (action == DESTROY)
 		handle_mutex_return(action, pthread_mutex_destroy(mutex));
 	else
-		printf("TODO: No action to handle (mutex).\n");
+		printf("No action to handle (mutex).\n");
 }
 
 static void	handle_thread_error(t_Mutex_Thread_Actions action, int status)
@@ -81,5 +80,5 @@ void	thread_handler(pthread_t *thread, void *(*dinner)(void *),
 	else if (action == DETACH)
 		handle_thread_error(pthread_detach(*thread), action);
 	else
-		printf("TODO: No action to handle (thread).\n");
+		printf("No action to handle (thread).\n");
 }
