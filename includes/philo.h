@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 00:30:34 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 01:00:36 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 21:07:57 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ long	retrieve_times(pthread_mutex_t *mutex, const long *val);
 int		get_int(pthread_mutex_t *mutex, const int *val);
 
 // initialisers.c
-void	set_table(int argc, char **argv, t_table *table);
+int		set_table(int argc, char **argv, t_table *table);
 void	assign_forks(t_philo *philo, int philo_seat);
 void	init_philo(t_table *table);
 void	init_forks(t_table *table);
@@ -132,7 +132,6 @@ void	sleeping(t_philo *philo);
 void	*start_dinner(void *data);
 
 // dinner.c
-void	print_table_conditions(t_table *table);
 void	*monitor_dinner(void *data);
 void	dinner(t_table *table);
 

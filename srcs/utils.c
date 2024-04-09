@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:14:11 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 16:41:20 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 21:06:41 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,7 @@ int	ft_atoi(const char *str)
 		output = output * 10 + (*str - '0');
 		str++;
 	}
+	if (*str != '\0')
+		return (-1);
 	return ((int)(output * operator));
 }

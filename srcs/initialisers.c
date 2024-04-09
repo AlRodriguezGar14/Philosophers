@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   initialisers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.co    +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/02 17:30:55 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/08 23:58:42 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 21:09:43 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	set_table(int argc, char **argv, t_table *table)
+int	set_table(int argc, char **argv, t_table *table)
 {
 	if (argc != 6)
 		table->max_meals = -1;
@@ -20,19 +20,23 @@ void	set_table(int argc, char **argv, t_table *table)
 	{
 		table->max_meals = ft_atoi(argv[5]);
 		if (table->max_meals < 0)
-			ft_error("Not enough meals");
+			return (ft_error("Not enough meals"), 1);
 	}
 	table->number_of_philos = ft_atoi(argv[1]);
+	if (table->number_of_philos < 1)
+		return (ft_error("No philos invited to the dinner."), 1);
 	table->time_to_die = ft_atoi(argv[2]);
+	if (table->time_to_die < 1)
+		return (ft_error("Bruh, no time to die (God mode)."), 1);
 	table->time_to_eat = ft_atoi(argv[3]);
+	if (table->time_to_eat < 1)
+		return (ft_error("No time to eat (famine mode)."), 1);
 	table->time_to_sleep = ft_atoi(argv[4]);
+	if (table->time_to_sleep < 1)
+		return (ft_error("No time to sleep (rave mode)."), 1);
 	table->max_meals_achieved = 0;
-	print_table_conditions(table);
-	if (table->time_to_die < 0
-		|| table->time_to_eat < 0
-		|| table->time_to_sleep < 0)
-		ft_error("There's no time to eat! (timestamp less than 0ms)");
 	mutex_handler(&table->table_mutex, INIT);
+	return (0);
 }
 
 void	assign_forks(t_philo *philo, int philo_seat)
@@ -60,7 +64,6 @@ void	init_philo(t_table *table)
 	t_philo	*philo;
 
 	idx = -1;
-	printf("init philo\n");
 	while (++idx < table->number_of_philos)
 	{
 		philo = table->philos + idx;
@@ -71,8 +74,6 @@ void	init_philo(t_table *table)
 		philo->is_eating = false;
 		philo->table = table;
 		assign_forks(philo, idx);
-		printf("Philo %d owns the forks:\n\ta -> %d\n\tb-> %d\n",
-			philo->id, philo->first_fork->fork_id, philo->second_fork->fork_id);
 		mutex_handler(&philo->philo_mutex, INIT);
 	}
 }

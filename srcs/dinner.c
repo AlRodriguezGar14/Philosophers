@@ -3,23 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   dinner.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alberrod <alberrod@student.42urduliz.com>  +#+  +:+       +#+        */
+/*   By: alberrod <alberrod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/06 00:02:53 by alberrod          #+#    #+#             */
-/*   Updated: 2024/04/09 02:12:16 by alberrod         ###   ########.fr       */
+/*   Updated: 2024/04/09 21:08:21 by alberrod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	print_table_conditions(t_table *table)
-{
-	printf("Number of philos: %d\n", table->number_of_philos);
-	printf("Time to die: %d\n", table->time_to_die);
-	printf("Time to eat: %d\n", table->time_to_eat);
-	printf("Time to sleep: %d\n", table->time_to_sleep);
-	printf("Max meals: %d\n", table->max_meals);
-}
 
 void	*monitor_dinner(void *data)
 {
@@ -73,5 +64,4 @@ void	dinner(t_table *table)
 	while (++idx < table->number_of_philos)
 		thread_handler(&table->philos[idx].thread_id, NULL, NULL, JOIN);
 	thread_handler(&table->monitor, NULL, NULL, JOIN);
-	printf("Ladies and gentlemen, the dinner ended\n");
 }
